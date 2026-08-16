@@ -3,7 +3,7 @@ import type {
   HealthStatus,
   InstanceSnapshot,
   Result,
-} from './types';
+} from "./types";
 
 /**
  * Framework-agnostic HTTP client for the SCXML HTTP Engine REST API.
@@ -29,11 +29,8 @@ export class EngineClient {
    *   (e.g. `"http://localhost:4000"`). Trailing slashes are stripped.
    * @param _config - Optional configuration (reserved for future use).
    */
-  constructor(
-    baseUrl: string,
-    _config?: EngineConfig,
-  ) {
-    this.baseUrl = baseUrl.replace(/\/+$/, '');
+  constructor(baseUrl: string, _config?: EngineConfig) {
+    this.baseUrl = baseUrl.replace(/\/+$/, "");
   }
 
   // ---------------------------------------------------------------------------
@@ -50,7 +47,7 @@ export class EngineClient {
   ): Promise<Result<T>> {
     try {
       const response = await fetch(url, {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         ...options,
       });
 
@@ -62,7 +59,7 @@ export class EngineClient {
 
       if (!response.ok) {
         const message =
-          typeof body?.error === 'string'
+          typeof body?.error === "string"
             ? body.error
             : `HTTP ${response.status}`;
         return { ok: false, error: message };
@@ -71,7 +68,7 @@ export class EngineClient {
       return { ok: true, data: body as T };
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : 'Unknown network error';
+        err instanceof Error ? err.message : "Unknown network error";
       return { ok: false, error: message };
     }
   }
@@ -91,7 +88,7 @@ export class EngineClient {
       return { ok: true, data: text };
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : 'Unknown network error';
+        err instanceof Error ? err.message : "Unknown network error";
       return { ok: false, error: message };
     }
   }
@@ -123,13 +120,13 @@ export class EngineClient {
   ): Promise<Result<InstanceSnapshot>> {
     const body: Record<string, unknown> = {
       document:
-        typeof document === 'string' ? document : JSON.stringify(document),
+        typeof document === "string" ? document : JSON.stringify(document),
     };
     if (instanceId !== undefined) {
       body.instance_id = instanceId;
     }
     return this.fetchJson<InstanceSnapshot>(`${this.baseUrl}/statecharts`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(body),
     });
   }
@@ -154,7 +151,7 @@ export class EngineClient {
       body.initial_datamodel = initialDatamodel;
     }
     return this.fetchJson<InstanceSnapshot>(`${this.baseUrl}/instances`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(body),
     });
   }
@@ -188,7 +185,7 @@ export class EngineClient {
     return this.fetchJson<InstanceSnapshot>(
       `${this.baseUrl}/instances/${encodeURIComponent(instanceId)}/events`,
       {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(body),
       },
     );
@@ -202,7 +199,7 @@ export class EngineClient {
   ): Promise<Result<{ deleted: boolean }>> {
     return this.fetchJson<{ deleted: boolean }>(
       `${this.baseUrl}/instances/${encodeURIComponent(instanceId)}`,
-      { method: 'DELETE' },
+      { method: "DELETE" },
     );
   }
 

@@ -65,13 +65,13 @@ Every endpoint returns the **full snapshot** shape:
 
 ### Build System — esbuild + vitest + biome (matching `scxml-parser`)
 
-| Tool | Purpose |
-|------|---------|
-| `esbuild` | Bundles CJS (`dist/index.js`) + ESM (`dist/index.mjs`) |
-| `tsc` | `--emitDeclarationOnly` for `.d.ts` + `--noEmit` for type-checking |
-| `vitest` + `@vitest/coverage-v8` | Tests with **100% coverage thresholds** |
-| `@biomejs/biome` | Lint + format (pre-commit + pre-push via Lefthook) |
-| `lefthook` | Git hooks (pre-commit: format+lint staged, pre-push: full check + type-check) |
+| Tool                             | Purpose                                                                       |
+| -------------------------------- | ----------------------------------------------------------------------------- |
+| `esbuild`                        | Bundles CJS (`dist/index.js`) + ESM (`dist/index.mjs`)                        |
+| `tsc`                            | `--emitDeclarationOnly` for `.d.ts` + `--noEmit` for type-checking            |
+| `vitest` + `@vitest/coverage-v8` | Tests with **100% coverage thresholds**                                       |
+| `@biomejs/biome`                 | Lint + format (pre-commit + pre-push via Lefthook)                            |
+| `lefthook`                       | Git hooks (pre-commit: format+lint staged, pre-push: full check + type-check) |
 
 ### Files Created (14 total)
 
@@ -97,43 +97,43 @@ scxml-http-browser-client/
 
 ### Key Design Decisions (implemented)
 
-| Decision | Implementation |
-|----------|---------------|
-| `createStatechart` document type | `string | object` — client serializes objects internally (Option B) |
-| `Result<T>` pattern | `{ ok: true; data: T } | { ok: false; error: string }` — matches editor's existing pattern |
-| `StateInfo.type` | `"atomic" | "compound" | "parallel" | "final" | "initial"` — matches engine, fixes `"history"` bug in editor's current types |
-| `health()` mapping | Maps `text/plain` → `{ status: "ok" }` for JSON consistency |
-| All create/list endpoints | Return full `InstanceSnapshot` (not partial types) |
-| Zero runtime deps | Native `fetch` only — no axios, no zod |
+| Decision                         | Implementation                                              |
+| -------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------- | -------------------------------------------------------------------------- |
+| `createStatechart` document type | `string                                                     | object` — client serializes objects internally (Option B)         |
+| `Result<T>` pattern              | `{ ok: true; data: T }                                      | { ok: false; error: string }` — matches editor's existing pattern |
+| `StateInfo.type`                 | `"atomic"                                                   | "compound"                                                        | "parallel" | "final" | "initial"`— matches engine, fixes`"history"` bug in editor's current types |
+| `health()` mapping               | Maps `text/plain` → `{ status: "ok" }` for JSON consistency |
+| All create/list endpoints        | Return full `InstanceSnapshot` (not partial types)          |
+| Zero runtime deps                | Native `fetch` only — no axios, no zod                      |
 
 ### Verification Results
 
-| Check | Result |
-|-------|--------|
-| `npm install` | Installed 221 packages |
-| `npm run build` | Produces `dist/index.js`, `dist/index.mjs`, `dist/index.d.ts`, `dist/client.d.ts`, `dist/types.d.ts` |
-| `npm test` | **38 tests passed** (29 client + 9 types) |
-| `npm run test:coverage` | **100% lines, 100% branches, 100% functions, 100% statements** |
+| Check                   | Result                                                                                               |
+| ----------------------- | ---------------------------------------------------------------------------------------------------- |
+| `npm install`           | Installed 221 packages                                                                               |
+| `npm run build`         | Produces `dist/index.js`, `dist/index.mjs`, `dist/index.d.ts`, `dist/client.d.ts`, `dist/types.d.ts` |
+| `npm test`              | **38 tests passed** (29 client + 9 types)                                                            |
+| `npm run test:coverage` | **100% lines, 100% branches, 100% functions, 100% statements**                                       |
 
 ---
 
 ## Files created
 
-| File            | Purpose                  |
-| --------------- | ------------------------ |
-| `package.json`  | Package config           |
-| `tsconfig.json` | TypeScript config        |
-| `biome.json`    | Lint/format config       |
-| `vitest.config.ts` | Test runner + 100% coverage |
-| `lefthook.yml`  | Git hooks                |
-| `.gitignore`    | Ignore dist/node_modules |
-| `README.md`     | Documentation            |
-| `scripts/build.mjs` | Build script (esbuild + tsc) |
-| `src/index.ts`  | Re-exports (public API contract) |
-| `src/types.ts`  | Type definitions         |
-| `src/client.ts` | EngineClient class       |
-| `tests/client.test.ts` | 29 tests, 100% coverage |
-| `tests/types.test.ts`  | 9 compile-time type tests |
+| File                   | Purpose                          |
+| ---------------------- | -------------------------------- |
+| `package.json`         | Package config                   |
+| `tsconfig.json`        | TypeScript config                |
+| `biome.json`           | Lint/format config               |
+| `vitest.config.ts`     | Test runner + 100% coverage      |
+| `lefthook.yml`         | Git hooks                        |
+| `.gitignore`           | Ignore dist/node_modules         |
+| `README.md`            | Documentation                    |
+| `scripts/build.mjs`    | Build script (esbuild + tsc)     |
+| `src/index.ts`         | Re-exports (public API contract) |
+| `src/types.ts`         | Type definitions                 |
+| `src/client.ts`        | EngineClient class               |
+| `tests/client.test.ts` | 29 tests, 100% coverage          |
+| `tests/types.test.ts`  | 9 compile-time type tests        |
 
 ---
 

@@ -68,30 +68,30 @@ class EngineClient {
 }
 ```
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `baseUrl` | `string` | Base URL of the engine server (e.g. `http://localhost:4000`). Trailing slashes are stripped. |
-| `config` | `EngineConfig` (optional) | Reserved for future configuration options. |
+| Parameter | Type                      | Description                                                                                  |
+| --------- | ------------------------- | -------------------------------------------------------------------------------------------- |
+| `baseUrl` | `string`                  | Base URL of the engine server (e.g. `http://localhost:4000`). Trailing slashes are stripped. |
+| `config`  | `EngineConfig` (optional) | Reserved for future configuration options.                                                   |
 
 ### Methods
 
 All methods return `Result<T>` — a discriminated union for consistent error handling.
 
-| Method | HTTP | Endpoint | Returns |
-|--------|------|----------|---------|
-| `health()` | `GET` | `/healthz` | `Result<HealthStatus>` |
-| `createStatechart(document, instanceId?)` | `POST` | `/statecharts` | `Result<InstanceSnapshot>` |
-| `createInstance(graphId, instanceId?, initialDatamodel?)` | `POST` | `/instances` | `Result<InstanceSnapshot>` |
-| `getInstance(instanceId)` | `GET` | `/instances/:id` | `Result<InstanceSnapshot>` |
-| `sendEvent(instanceId, eventName, data?)` | `POST` | `/instances/:id/events` | `Result<InstanceSnapshot>` |
-| `deleteInstance(instanceId)` | `DELETE` | `/instances/:id` | `Result<{ deleted: boolean }>` |
-| `listInstances()` | `GET` | `/instances` | `Result<InstanceSnapshot[]>` |
+| Method                                                    | HTTP     | Endpoint                | Returns                        |
+| --------------------------------------------------------- | -------- | ----------------------- | ------------------------------ |
+| `health()`                                                | `GET`    | `/healthz`              | `Result<HealthStatus>`         |
+| `createStatechart(document, instanceId?)`                 | `POST`   | `/statecharts`          | `Result<InstanceSnapshot>`     |
+| `createInstance(graphId, instanceId?, initialDatamodel?)` | `POST`   | `/instances`            | `Result<InstanceSnapshot>`     |
+| `getInstance(instanceId)`                                 | `GET`    | `/instances/:id`        | `Result<InstanceSnapshot>`     |
+| `sendEvent(instanceId, eventName, data?)`                 | `POST`   | `/instances/:id/events` | `Result<InstanceSnapshot>`     |
+| `deleteInstance(instanceId)`                              | `DELETE` | `/instances/:id`        | `Result<{ deleted: boolean }>` |
+| `listInstances()`                                         | `GET`    | `/instances`            | `Result<InstanceSnapshot[]>`   |
 
 ### `Result<T>` Pattern
 
 ```typescript
 type Result<T> =
-  | { ok: true; data: T }       // Success
+  | { ok: true; data: T } // Success
   | { ok: false; error: string }; // Error
 
 // Usage:
@@ -111,14 +111,14 @@ interface InstanceSnapshot {
   configuration: string[];
   datamodel: Record<string, unknown> | null;
   done: boolean;
-  execution_status: 'idle' | 'running' | 'completed' | 'error';
+  execution_status: "idle" | "running" | "completed" | "error";
   active_states: StateInfo[];
 }
 
 interface StateInfo {
   id: string;
-  status: 'running' | 'completed' | 'error';
-  type: 'atomic' | 'compound' | 'parallel' | 'final' | 'initial';
+  status: "running" | "completed" | "error";
+  type: "atomic" | "compound" | "parallel" | "final" | "initial";
 }
 
 interface HealthStatus {
@@ -153,11 +153,11 @@ npm run check
 
 The build script (`scripts/build.mjs`) produces:
 
-| File | Format |
-|------|--------|
-| `dist/index.js` | CommonJS (browser bundle) |
-| `dist/index.mjs` | ESM (browser bundle) |
-| `dist/index.d.ts` | TypeScript declarations |
+| File              | Format                    |
+| ----------------- | ------------------------- |
+| `dist/index.js`   | CommonJS (browser bundle) |
+| `dist/index.mjs`  | ESM (browser bundle)      |
+| `dist/index.d.ts` | TypeScript declarations   |
 
 ### Pre-commit Hooks
 
@@ -176,12 +176,12 @@ npm run hooks:install
 
 ## Related Projects
 
-| Repository | Role |
-|------------|------|
-| [scxml-http-server](https://github.com/PranayPant/scxml-http-server) | Elixir HTTP engine that this client wraps |
-| [scxml-orchestrator](https://github.com/PranayPant/scxml-orchestrator) | Core SCXML runtime engine |
-| [scxml-parser](https://github.com/PranayPant/scxml-parser) | SCXML XML/JSON parser |
-| [scxml-ui-editor](https://github.com/PranayPant/scxml-ui-editor) | Visual SCXML editor (primary consumer of this client) |
+| Repository                                                             | Role                                                  |
+| ---------------------------------------------------------------------- | ----------------------------------------------------- |
+| [scxml-http-server](https://github.com/PranayPant/scxml-http-server)   | Elixir HTTP engine that this client wraps             |
+| [scxml-orchestrator](https://github.com/PranayPant/scxml-orchestrator) | Core SCXML runtime engine                             |
+| [scxml-parser](https://github.com/PranayPant/scxml-parser)             | SCXML XML/JSON parser                                 |
+| [scxml-ui-editor](https://github.com/PranayPant/scxml-ui-editor)       | Visual SCXML editor (primary consumer of this client) |
 
 ---
 

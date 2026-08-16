@@ -16,7 +16,7 @@ export type {
   Ok,
   Result,
   StateInfo,
-} from './types';
+} from "./types";
 
 // Re-export the client class
-export { EngineClient } from './client';
+export { EngineClient } from "./client";
