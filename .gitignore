@@ -3,4 +3,3 @@ dist
 *.tsbuildinfo
 coverage
 src/generated.ts
-pr_body.txt
