@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g., 0.2.0)"
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout browser-client
+        uses: actions/checkout@v4
+        with:
+          path: scxml-http-browser-client
+
+      # --- Node setup & typegen (postinstall downloads spec from server's release) ---
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install client deps
+        run: npm ci
+        working-directory: scxml-http-browser-client
+
+      - name: Build & test
+        run: |
+          npm run build
+          npm test
+        working-directory: scxml-http-browser-client
+
+      # --- Publish release tarball ---
+      - name: Bump version
+        run: npm version ${{ github.event.inputs.version }} --no-git-tag-version
+        working-directory: scxml-http-browser-client
+
+      - name: Pack tarball
+        run: npm pack
+        working-directory: scxml-http-browser-client
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          files: scxml-http-browser-client/scxml-http-browser-client-${{ github.event.inputs.version }}.tgz
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

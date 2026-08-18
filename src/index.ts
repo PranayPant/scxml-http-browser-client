@@ -5,7 +5,6 @@
  * Zero runtime dependencies — uses native `fetch` only.
  */
 
-// Re-export all public types
 export type {
   EngineConfig,
   EngineError,
@@ -16,7 +15,6 @@ export type {
   Ok,
   Result,
   StateInfo,
-} from "./types";
-
-// Re-export the client class
-export { EngineClient } from "./client";
+} from './client';
+// Re-export the client class and all public types
+export { EngineClient } from './client';

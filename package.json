@@ -7,15 +7,17 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
+    "gen:types": "curl -sL https://github.com/PranayPant/scxml-http-server/releases/latest/download/openapi.json -o openapi.json && openapi-typescript openapi.json -o src/generated.ts && rm -f openapi.json",
+    "postinstall": "npm run gen:types",
     "build": "node scripts/build.mjs",
     "prepare": "npm run build",
     "test": "vitest run",
@@ -41,6 +43,7 @@
     "@vitest/coverage-v8": "^1.0.0",
     "esbuild": "^0.20.0",
     "lefthook": "^2.1.10",
+    "openapi-typescript": "^6.7.5",
     "typescript": "^7.0.2",
     "vitest": "^1.0.0"
   }
