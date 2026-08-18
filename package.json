@@ -16,6 +16,8 @@
     "dist"
   ],
   "scripts": {
+    "gen:types": "curl -sL https://github.com/PranayPant/scxml-http-server/releases/latest/download/openapi.json -o openapi.json && openapi-typescript openapi.json -o src/generated.ts && rm -f openapi.json",
+    "postinstall": "npm run gen:types",
     "build": "node scripts/build.mjs",
     "prepare": "npm run build",
     "test": "vitest run",
@@ -26,8 +28,7 @@
     "lint": "biome lint --write .",
     "lint:check": "biome lint .",
     "check": "biome check src tests",
-    "hooks:install": "lefthook install",
-    "gen:types": "openapi-typescript ../scxml-http-server/openapi.json -o src/generated.ts"
+    "hooks:install": "lefthook install"
   },
   "keywords": [
     "scxml",
