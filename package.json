@@ -7,9 +7,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "files": [
@@ -26,7 +26,8 @@
     "lint": "biome lint --write .",
     "lint:check": "biome lint .",
     "check": "biome check src tests",
-    "hooks:install": "lefthook install"
+    "hooks:install": "lefthook install",
+    "gen:types": "openapi-typescript ../scxml-http-server/openapi.json -o src/generated.ts"
   },
   "keywords": [
     "scxml",
@@ -41,6 +42,7 @@
     "@vitest/coverage-v8": "^1.0.0",
     "esbuild": "^0.20.0",
     "lefthook": "^2.1.10",
+    "openapi-typescript": "^6.7.5",
     "typescript": "^7.0.2",
     "vitest": "^1.0.0"
   }
