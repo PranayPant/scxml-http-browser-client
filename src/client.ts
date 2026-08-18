@@ -1,4 +1,24 @@
-import type { EngineConfig, HealthStatus, InstanceSnapshot, Result } from './types';
+// ---------------------------------------------------------------------------
+// Client-specific types
+// ---------------------------------------------------------------------------
+
+/** Discriminated union for consistent API responses. */
+export type Ok<T> = { ok: true; data: T };
+export type Err = { ok: false; error: string };
+export type Result<T> = Ok<T> | Err;
+
+/** Configuration for the EngineClient. */
+export interface EngineConfig {
+  /** Base URL of the scxml-http-engine server (e.g. "http://localhost:4000"). */
+  baseUrl: string;
+}
+
+// Convenience aliases for generated OpenAPI types
+export type InstanceSnapshot = import('./generated').components['schemas']['Snapshot'];
+export type HealthStatus = import('./generated').components['schemas']['HealthStatus'];
+export type StateInfo = import('./generated').components['schemas']['StateInfo'];
+export type EngineError = import('./generated').components['schemas']['EngineError'];
+export type ExecutionStatus = InstanceSnapshot['execution_status'];
 
 /**
  * Framework-agnostic HTTP client for the SCXML HTTP Engine REST API.

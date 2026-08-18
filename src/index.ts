@@ -5,17 +5,20 @@
  * Zero runtime dependencies — uses native `fetch` only.
  */
 
-// Re-export the client class
+// Re-export the client class and all public types
 export { EngineClient } from './client';
-// Re-export all public types
 export type {
   EngineConfig,
-  EngineError,
   Err,
+  Ok,
+  Result,
+} from './client';
+
+// Re-export OpenAPI-generated type aliases
+export type {
+  EngineError,
   ExecutionStatus,
   HealthStatus,
   InstanceSnapshot,
-  Ok,
-  Result,
   StateInfo,
-} from './types';
+} from './client';
