@@ -1,9 +1,4 @@
-import type {
-  EngineConfig,
-  HealthStatus,
-  InstanceSnapshot,
-  Result,
-} from "./types";
+import type { EngineConfig, HealthStatus, InstanceSnapshot, Result } from './types';
 
 /**
  * Framework-agnostic HTTP client for the SCXML HTTP Engine REST API.
@@ -30,7 +25,7 @@ export class EngineClient {
    * @param _config - Optional configuration (reserved for future use).
    */
   constructor(baseUrl: string, _config?: EngineConfig) {
-    this.baseUrl = baseUrl.replace(/\/+$/, "");
+    this.baseUrl = baseUrl.replace(/\/+$/, '');
   }
 
   // ---------------------------------------------------------------------------
@@ -41,17 +36,14 @@ export class EngineClient {
    * Perform a JSON request and parse the response.
    * Handles 204 No Content by returning `null`.
    */
-  private async fetchJson<T>(
-    url: string,
-    options?: RequestInit,
-  ): Promise<Result<T>> {
+  private async fetchJson<T>(url: string, options?: RequestInit): Promise<Result<T>> {
     try {
-      console.info(`[EngineClient] ${options?.method || "GET"} ${url}`, {
+      console.info(`[EngineClient] ${options?.method || 'GET'} ${url}`, {
         body: options?.body,
       });
 
       const response = await fetch(url, {
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
         ...options,
       });
 
@@ -63,10 +55,7 @@ export class EngineClient {
       const body = await response.json();
 
       if (!response.ok) {
-        const message =
-          typeof body?.error === "string"
-            ? body.error
-            : `HTTP ${response.status}`;
+        const message = typeof body?.error === 'string' ? body.error : `HTTP ${response.status}`;
         console.info(`[EngineClient] Response: ${response.status}`, {
           error: message,
         });
@@ -78,8 +67,7 @@ export class EngineClient {
       });
       return { ok: true, data: body as T };
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Unknown network error";
+      const message = err instanceof Error ? err.message : 'Unknown network error';
       console.info(`[EngineClient] Error:`, { error: message });
       return { ok: false, error: message };
     }
@@ -99,8 +87,7 @@ export class EngineClient {
 
       return { ok: true, data: text };
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Unknown network error";
+      const message = err instanceof Error ? err.message : 'Unknown network error';
       return { ok: false, error: message };
     }
   }
@@ -131,14 +118,13 @@ export class EngineClient {
     instanceId?: string,
   ): Promise<Result<InstanceSnapshot>> {
     const body: Record<string, unknown> = {
-      document:
-        typeof document === "string" ? document : JSON.stringify(document),
+      document: typeof document === 'string' ? document : JSON.stringify(document),
     };
     if (instanceId !== undefined) {
       body.instance_id = instanceId;
     }
     return this.fetchJson<InstanceSnapshot>(`${this.baseUrl}/statecharts`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(body),
     });
   }
@@ -163,7 +149,7 @@ export class EngineClient {
       body.initial_datamodel = initialDatamodel;
     }
     return this.fetchJson<InstanceSnapshot>(`${this.baseUrl}/instances`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(body),
     });
   }
@@ -197,7 +183,7 @@ export class EngineClient {
     return this.fetchJson<InstanceSnapshot>(
       `${this.baseUrl}/instances/${encodeURIComponent(instanceId)}/events`,
       {
-        method: "POST",
+        method: 'POST',
         body: JSON.stringify(body),
       },
     );
@@ -206,12 +192,10 @@ export class EngineClient {
   /**
    * DELETE /instances/:id — Stop and remove a running instance.
    */
-  async deleteInstance(
-    instanceId: string,
-  ): Promise<Result<{ deleted: boolean }>> {
+  async deleteInstance(instanceId: string): Promise<Result<{ deleted: boolean }>> {
     return this.fetchJson<{ deleted: boolean }>(
       `${this.baseUrl}/instances/${encodeURIComponent(instanceId)}`,
-      { method: "DELETE" },
+      { method: 'DELETE' },
     );
   }
 
