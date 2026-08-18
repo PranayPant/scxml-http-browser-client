@@ -11,6 +11,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout browser-client
         uses: actions/checkout@v4
@@ -43,9 +45,10 @@ jobs:
         working-directory: scxml-http-browser-client
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ github.event.inputs.version }}
           files: scxml-http-browser-client/scxml-http-browser-client-${{ github.event.inputs.version }}.tgz
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
