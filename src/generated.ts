@@ -16,7 +16,7 @@ export interface components {
       datamodel: Record<string, unknown> | null;
       done: boolean;
       execution_status: 'idle' | 'running' | 'completed' | 'error';
-      active_states: StateInfo[];
+      active_states: components['schemas']['StateInfo'][];
     };
     StateInfo: {
       id: string;
