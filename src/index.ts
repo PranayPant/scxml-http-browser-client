@@ -6,7 +6,7 @@
  */
 
 // Re-export the client class
-export { EngineClient } from './client';
+export { EngineClient } from "./client";
 // Re-export all public types
 export type {
   EngineConfig,
@@ -18,4 +18,4 @@ export type {
   Ok,
   Result,
   StateInfo,
-} from './generated';
+} from "./types";
