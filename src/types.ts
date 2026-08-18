@@ -7,13 +7,13 @@
  */
 
 /** Current execution status of a statechart instance. */
-export type ExecutionStatus = "idle" | "running" | "completed" | "error";
+export type ExecutionStatus = 'idle' | 'running' | 'completed' | 'error';
 
 /** Per-state execution status reported by the engine. */
 export interface StateInfo {
   id: string;
-  status: "running" | "completed" | "error";
-  type: "atomic" | "compound" | "parallel" | "final" | "initial";
+  status: 'running' | 'completed' | 'error';
+  type: 'atomic' | 'compound' | 'parallel' | 'final' | 'initial';
 }
 
 /**
