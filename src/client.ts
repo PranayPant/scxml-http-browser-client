@@ -1,4 +1,4 @@
-import type { EngineConfig, HealthStatus, InstanceSnapshot, Result } from './types';
+import type { EngineConfig, HealthStatus, InstanceSnapshot, Result } from './generated';
 
 /**
  * Framework-agnostic HTTP client for the SCXML HTTP Engine REST API.

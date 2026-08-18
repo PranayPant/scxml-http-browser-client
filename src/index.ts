@@ -18,4 +18,4 @@ export type {
   Ok,
   Result,
   StateInfo,
-} from './types';
+} from './generated';
