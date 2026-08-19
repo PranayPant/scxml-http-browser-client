@@ -12,8 +12,8 @@
 // Convenience aliases for the public API
 export type InstanceSnapshot = import('./generated').components['schemas']['Snapshot'];
 export type StateInfo = import('./generated').components['schemas']['StateInfo'];
-export type HealthStatus = import('./generated').components['schemas']['HealthStatus'];
-export type EngineError = import('./generated').components['schemas']['EngineError'];
+export type EngineError = import('./generated').components['schemas']['Error'];
+export type HealthStatus = { status: string };
 export type ExecutionStatus = InstanceSnapshot['execution_status'];
 
 /** Discriminated union for consistent API responses. */
