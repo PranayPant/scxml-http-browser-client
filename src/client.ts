@@ -15,10 +15,10 @@ export interface EngineConfig {
 
 // Convenience aliases for generated OpenAPI types
 export type InstanceSnapshot = import('./generated').components['schemas']['Snapshot'];
-export type HealthStatus = import('./generated').components['schemas']['HealthStatus'];
 export type StateInfo = import('./generated').components['schemas']['StateInfo'];
-export type EngineError = import('./generated').components['schemas']['EngineError'];
+export type EngineError = import('./generated').components['schemas']['Error'];
 export type ExecutionStatus = InstanceSnapshot['execution_status'];
+export type HealthStatus = { status: string };
 
 /**
  * Framework-agnostic HTTP client for the SCXML HTTP Engine REST API.

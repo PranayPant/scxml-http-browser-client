@@ -16,7 +16,7 @@
     "dist"
   ],
   "scripts": {
-    "gen:types": "curl -sL https://github.com/PranayPant/scxml-http-server/releases/latest/download/openapi.json -o openapi.json && openapi-typescript openapi.json -o src/generated.ts && rm -f openapi.json",
+    "gen:types": "curl -sL https://github.com/PranayPant/scxml-http-server/releases/latest/download/openapi.json -o openapi.json && openapi-typescript openapi.json -o src/generated.ts && node -e \"require('fs').unlinkSync('openapi.json')\"",
     "postinstall": "npm run gen:types",
     "build": "node scripts/build.mjs",
     "prepare": "npm run build",
