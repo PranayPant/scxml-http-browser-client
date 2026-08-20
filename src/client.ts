@@ -1,3 +1,5 @@
+import { clientTracer } from './tracing';
+
 // ---------------------------------------------------------------------------
 // Client-specific types
 // ---------------------------------------------------------------------------
@@ -11,6 +13,12 @@ export type Result<T> = Ok<T> | Err;
 export interface EngineConfig {
   /** Base URL of the scxml-http-engine server (e.g. "http://localhost:4000"). */
   baseUrl: string;
+  /**
+   * Enable fine-grained (DEBUG-style) tracing. Defaults to `false` so only
+   * coarse per-request spans are emitted; hosts like scxml-ui-editor can turn
+   * this on to mirror the server's `debug` log level.
+   */
+  spanDetail?: boolean;
 }
 
 // Convenience aliases for generated OpenAPI types
@@ -42,10 +50,12 @@ export class EngineClient {
   /**
    * @param baseUrl - Base URL of the scxml-http-engine server
    *   (e.g. `"http://localhost:4000"`). Trailing slashes are stripped.
-   * @param _config - Optional configuration (reserved for future use).
+   * @param config - Optional configuration: `spanDetail` toggles fine-grained
+   *   (DEBUG-style) spans, matching the server's INFO/DEBUG log-level split.
    */
-  constructor(baseUrl: string, _config?: EngineConfig) {
+  constructor(baseUrl: string, config?: EngineConfig) {
     this.baseUrl = baseUrl.replace(/\/+$/, '');
+    clientTracer.setDetail(config?.spanDetail ?? false);
   }
 
   // ---------------------------------------------------------------------------
@@ -57,6 +67,13 @@ export class EngineClient {
    * Handles 204 No Content by returning `null`.
    */
   private async fetchJson<T>(url: string, options?: RequestInit): Promise<Result<T>> {
+    const span = clientTracer.startSpan(this.spanName(options), {
+      'http.method': options?.method ?? 'GET',
+      'url.path': url,
+    });
+    const detailSpan = clientTracer.startDetailSpan('client.fetchJson', {
+      body: options?.body ? JSON.stringify(options.body) : undefined,
+    });
     try {
       console.info(`[EngineClient] ${options?.method || 'GET'} ${url}`, {
         body: options?.body,
@@ -66,8 +83,11 @@ export class EngineClient {
         headers: { 'Content-Type': 'application/json' },
         ...options,
       });
+      span.setAttribute('http.status_code', response.status);
 
       if (response.status === 204) {
+        span.end();
+        detailSpan?.end();
         console.info(`[EngineClient] Response: 204 No Content`);
         return { ok: true, data: null as unknown as T };
       }
@@ -76,38 +96,64 @@ export class EngineClient {
 
       if (!response.ok) {
         const message = typeof body?.error === 'string' ? body.error : `HTTP ${response.status}`;
+        span.setAttribute('error', message);
+        span.setStatus({ code: 2, message });
         console.info(`[EngineClient] Response: ${response.status}`, {
           error: message,
         });
+        span.end();
+        detailSpan?.end();
         return { ok: false, error: message };
       }
 
       console.info(`[EngineClient] Response: ${response.status}`, {
         data: body,
       });
+      span.end();
+      detailSpan?.end();
       return { ok: true, data: body as T };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown network error';
+      span.setStatus({ code: 2, message });
       console.info(`[EngineClient] Error:`, { error: message });
+      span.end();
+      detailSpan?.end();
       return { ok: false, error: message };
     }
+  }
+
+  private spanName(options?: RequestInit): string {
+    const method = options?.method ?? 'GET';
+    if (method === 'POST') return 'client.post';
+    if (method === 'DELETE') return 'client.delete';
+    return `client.${method.toLowerCase()}`;
   }
 
   /**
    * Fetch a plain text response (used for /healthz which returns text/plain).
    */
   private async fetchText(url: string): Promise<Result<string>> {
+    const span = clientTracer.startSpan('client.get', {
+      'http.method': 'GET',
+      'url.path': url,
+    });
     try {
       const response = await fetch(url);
+      span.setAttribute('http.status_code', response.status);
       const text = await response.text();
 
       if (!response.ok) {
+        span.setStatus({ code: 2, message: text || `HTTP ${response.status}` });
+        span.end();
         return { ok: false, error: text || `HTTP ${response.status}` };
       }
 
+      span.end();
       return { ok: true, data: text };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown network error';
+      span.setStatus({ code: 2, message });
+      span.end();
       return { ok: false, error: message };
     }
   }

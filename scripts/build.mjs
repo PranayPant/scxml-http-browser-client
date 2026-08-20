@@ -33,6 +33,10 @@ await build({
   format: 'cjs',
   target: 'es2020',
   sourcemap: false,
+  // `@opentelemetry/api` is a peer/API-only dependency: the host app registers
+  // the SDK and provides the API package, so we must NOT inline it in the
+  // published bundle (avoiding duplicate package / scope mismatches).
+  external: ['@opentelemetry/api'],
 });
 
 // 3. Bundle ESM
@@ -44,6 +48,7 @@ await build({
   format: 'esm',
   target: 'es2020',
   sourcemap: false,
+  external: ['@opentelemetry/api'],
 });
 
 // 4. Generate TypeScript declarations

@@ -2,7 +2,8 @@
  * scxml-http-browser-client
  *
  * Framework-agnostic TypeScript HTTP client for the SCXML HTTP Engine REST API.
- * Zero runtime dependencies — uses native `fetch` only.
+ * Minimal runtime dependency — `@opentelemetry/api` only (no-op when no SDK
+ * is registered by the host). Uses native `fetch`.
  */
 
 export type {
@@ -18,3 +19,5 @@ export type {
 } from './client';
 // Re-export the client class and all public types
 export { EngineClient } from './client';
+// Re-export the OTel tracer helper so hosts can toggle span detail.
+export { clientTracer } from './tracing';
