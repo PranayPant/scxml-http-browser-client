@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { EngineClient, clientTracer } from '../src/index';
+import { clientTracer, EngineClient } from '../src/index';
 
 // ---------------------------------------------------------------------------
 // Helpers
