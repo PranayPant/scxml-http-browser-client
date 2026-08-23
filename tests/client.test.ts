@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { EngineClient } from '../src/index';
+import { clientTracer, EngineClient } from '../src/index';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -31,6 +31,9 @@ describe('EngineClient', () => {
   });
 
   afterEach(() => {
+    // clientTracer is a module-level singleton; reset the detail flag so
+    // spanDetail tests don't leak into subsequent tests.
+    clientTracer.setDetail(false);
     vi.restoreAllMocks();
   });
 
@@ -374,6 +377,78 @@ describe('EngineClient', () => {
       if (result.ok) {
         expect(result.data).toEqual([]);
       }
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // spanDetail tracing
+  // -----------------------------------------------------------------------
+
+  describe('spanDetail tracing', () => {
+    const snapshot = {
+      instance_id: 'inst-1',
+      configuration: [],
+      datamodel: null,
+      done: false,
+      execution_status: 'idle' as const,
+      active_states: [],
+    };
+
+    it('creates detail spans on the 204 path', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 204 }));
+      const client = new EngineClient('http://localhost:4000', { spanDetail: true });
+      const result = await client.getInstance('inst-1');
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.data).toBeNull();
+      }
+    });
+
+    it('creates detail spans on the success path', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(jsonResponse(snapshot));
+      const client = new EngineClient('http://localhost:4000', { spanDetail: true });
+      const result = await client.getInstance('inst-1');
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.data).toEqual(snapshot);
+      }
+    });
+
+    it('creates detail spans on the error response path', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+        jsonResponse({ error: 'instance not found' }, 404),
+      );
+      const client = new EngineClient('http://localhost:4000', { spanDetail: true });
+      const result = await client.getInstance('nonexistent');
+      expect(result.ok).toBe(false);
+    });
+
+    it('creates detail spans on the network failure path', async () => {
+      vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('fetch failed'));
+      const client = new EngineClient('http://localhost:4000', { spanDetail: true });
+      const result = await client.getInstance('inst-1');
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBe('fetch failed');
+      }
+    });
+
+    it('startDetailSpan returns a span when detail is enabled', () => {
+      clientTracer.setDetail(true);
+      const span = clientTracer.startDetailSpan('client.fetchJson');
+      expect(span).not.toBeNull();
+      span?.end();
+    });
+
+    it('startDetailSpan returns null when detail is disabled', () => {
+      clientTracer.setDetail(false);
+      expect(clientTracer.startDetailSpan('client.fetchJson')).toBeNull();
+    });
+
+    it('startSpan always returns a span', () => {
+      const span = clientTracer.startSpan('client.get');
+      expect(span).not.toBeNull();
+      span.end();
     });
   });
 
