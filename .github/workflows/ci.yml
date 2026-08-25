@@ -46,6 +46,13 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
 
+      # Reconcile the generated types against the OpenAPI contract the client
+      # is built on. `gen:types` (run by postinstall) regenerates src/generated.ts
+      # from the server's released openapi.json; this test fails on schema drift
+      # (e.g. StateInfo.type enum) that would otherwise ship silently.
+      - name: OpenAPI contract typecheck
+        run: npm run test:typecheck-spec
+
       - name: Test
         run: npm test
 

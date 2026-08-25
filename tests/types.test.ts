@@ -95,28 +95,32 @@ describe('type definitions', () => {
   // -----------------------------------------------------------------------
 
   describe('StateInfo', () => {
-    it('type includes "initial" and excludes "history"', () => {
-      // "initial" should be valid
+    it('type includes "history" (a real state type) and excludes "initial"', () => {
+      // "history" is a valid state type reported by the engine
+      // (RuntimeState.type ∈ atomic | compound | parallel | history | final)
+      // and matches the server's OpenAPI `StateInfo` schema.
       const state: StateInfo = {
         id: 's1',
         status: 'running',
-        type: 'initial',
+        type: 'history',
       };
-      expect(state.type).toBe('initial');
+      expect(state.type).toBe('history');
 
-      // All valid type values
+      // All valid type values are exactly the engine's state types.
       const validTypes: StateInfo['type'][] = [
         'atomic',
         'compound',
         'parallel',
         'final',
-        'initial',
+        'history',
       ];
       expect(validTypes).toHaveLength(5);
 
-      // Verify "history" is NOT in the valid types
-      // @ts-expect-error - "history" should not be assignable to StateInfo.type
-      const invalid: StateInfo['type'] = 'history';
+      // "initial" is the initial *pseudo-state* the editor synthesizes — it
+      // is NOT a StateInfo.type the engine emits (the engine's type excludes
+      // "initial"). Keep this type-check as the drift canary.
+      // @ts-expect-error - "initial" should NOT be assignable to StateInfo.type
+      const invalid: StateInfo['type'] = 'initial';
       void invalid;
     });
 
